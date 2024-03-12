@@ -1,0 +1,1 @@
+export const API_URL: string = 'wss://ws.finnhub.io?token=cnjh79hr01qmfbtbcprgcnjh79hr01qmfbtbcps0'
