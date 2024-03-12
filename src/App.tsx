@@ -1,9 +1,15 @@
 import './App.css';
+import Layout from './components/common/Layout/Layout';
+import Navbar from './components/common/Navbar/Navbar';
 
 function App() {
-  return <div className='border h-20 text-cyan-500'>
-    Hello World
-  </div>;
+  return (
+    <div className='h-20'>
+    <Layout>
+      hello there
+    </Layout>
+    </div>
+  );
 }
 
 export default App;
