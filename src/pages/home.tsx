@@ -1,6 +1,7 @@
 import Tabs from '@components/common/Tabs/Tabs';
 import { MouseEvent, useState } from 'react';
 import { Tab } from '@/src/types';
+import StockHeader from '@components/StockHeader/StockHeader';
 
 function Home() {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
@@ -32,20 +33,25 @@ function Home() {
     },
   ];
 
-  console.log(activeTabIndex);
   function onTabClick(e: MouseEvent<HTMLElement>, index: number) {
-    // if (activeTabIndex === index) return;
-
-    console.log(index);
+    if (activeTabIndex === index) return;
+    
     setActiveTabIndex(index);
   }
   return (
     <div>
+      <StockHeader
+        currency={'USD'}
+        stockName={'Meta'}
+        currentPrice={483.59}
+        previousClosing={505.95}
+        date={'Mar 13, 4:08:40 PM UTC+5:30 · USD · NYSE'}
+      />
       <Tabs
         tabs={TIMELINE_TABS_DATA}
         activeTabIndex={activeTabIndex}
         onTabClick={onTabClick}
-      />
+      ></Tabs>
     </div>
   );
 }
