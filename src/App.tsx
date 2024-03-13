@@ -1,13 +1,14 @@
+
 import './App.css';
 import Layout from './components/common/Layout/Layout';
-import Navbar from './components/common/Navbar/Navbar';
+import Home from '@/src/pages/home';
 
 function App() {
   return (
     <div className='h-20'>
-    <Layout>
-      hello there
-    </Layout>
+      <Layout>
+      <Home/>
+      </Layout>
     </div>
   );
 }
