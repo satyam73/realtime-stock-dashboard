@@ -1,11 +1,27 @@
 import Tabs from '@components/common/Tabs/Tabs';
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import { Tab } from '@/src/types';
 import StockHeader from '@components/StockHeader/StockHeader';
 import LineChart from '../components/LineChart/LineChart';
-
+import { CURRENT_PRICE_API_URL } from '../constants';
+import { getCurrentPrice } from '@/src/services/stocks';
 function Home() {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
+  const [currentPriceData, setCurrentPriceData] = useState<any>([]);
+  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
+  const [isCurrentPriceDataLoading, setIsCurrentPriceDataLoading] =
+    useState<boolean>(true);
+
+  let initialLoad = true;
+  const currency = currentPriceData?.[0]?.currency;
+  const stockName = currentPriceData?.[0]?.companyName;
+  const currentPrice = currentPriceData?.[0]?.latestPrice;
+  const previousClosing = currentPriceData?.[0]?.previousClose;
+  const latestUpdate =
+    currentPriceData?.[0]?.latestUpdate &&
+    new Date(currentPriceData?.[0]?.latestUpdate).toUTCString();
+  const primaryExchange = currentPriceData?.[0]?.primaryExchange;
+  console.log(CURRENT_PRICE_API_URL('META'));
   const TIMELINE_TABS_DATA: Tab[] = [
     {
       id: '1d',
@@ -99,20 +115,49 @@ function Home() {
       ),
     },
   ];
+  const POLLING_TIME = 2000;
+  useEffect(() => {
+    async function getPrice() {
+      if (initialLoad) {
+        setIsInitialLoading(false);
+        initialLoad = false;
+      }
+      try {
+        const data = await getCurrentPrice('META');
+        console.log(data);
+        setCurrentPriceData(data);
+      } catch (error) {
+        console.log(
+          'Some error occured while fetching current price of the stock ',
+          error
+        );
+      }
+    }
+
+    const interval = setInterval(getPrice, POLLING_TIME);
+
+    return () => clearInterval(interval);
+  }, []);
 
   function onTabClick(e: MouseEvent<HTMLElement>, index: number) {
     if (activeTabIndex === index) return;
 
     setActiveTabIndex(index);
   }
+
+  if (isInitialLoading) return <h2 className='text-lg mx-auto'>Loading...</h2>;
+
   return (
     <div className='flex flex-col gap-8'>
       <StockHeader
-        currency={'USD'}
-        stockName={'Meta'}
-        currentPrice={483.59}
-        previousClosing={505.95}
-        date={'Mar 13, 4:08:40 PM UTC+5:30 · USD · NYSE'}
+        currency={currency}
+        stockName={stockName}
+        // TODO: remove this
+        currentPrice={Number((currentPrice + Math.random()).toFixed(2))}
+        // currentPrice={currentPrice}
+        previousClosing={previousClosing}
+        date={latestUpdate}
+        primaryExchange={primaryExchange}
       />
       <Tabs
         tabs={TIMELINE_TABS_DATA}

@@ -4,4 +4,5 @@ export type StockHeaderProps = {
   currentPrice: number;
   previousClosing: number;
   date: string;
+  primaryExchange:string;
 };

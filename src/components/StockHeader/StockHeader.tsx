@@ -9,26 +9,28 @@ function StockHeader({
   currentPrice,
   previousClosing,
   date,
+  primaryExchange,
 }: StockHeaderProps) {
-  const [price, setPrice] = useState<number>(21);
-  useEffect(() => {
-    function runInterval() {
-      const randomPrice = Number((Math.random() * 100).toFixed(2));
-      setPrice(randomPrice);
-    }
-    const interval = setInterval(runInterval, 2000);
+  // console.log('currenprice ', currentPrice+Math.random())
+  // const [price, setPrice] = useState<number>(21);
+  // useEffect(() => {
+  //   function runInterval() {
+  //     const randomPrice = Number((Math.random() * 100).toFixed(2));
+  //     setPrice(randomPrice);
+  //   }
+  //   const interval = setInterval(runInterval, 2000);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
   const currencySymbol: string =
     CURRENCY_SYMBOL_MAPPER[currency] || 'Unknown currency';
   const gainOrLossToday: number = Number(
     (currentPrice - previousClosing).toFixed(2)
   );
   const isPriceUp: boolean = gainOrLossToday > 0;
-  const priceSign = isPriceUp ? '' : '-';
+  // const priceSign = isPriceUp ? '' : '-';
   const priceBackgroundColor: string = isPriceUp
     ? 'bg-green-100'
     : 'bg-red-100';
@@ -49,11 +51,11 @@ function StockHeader({
       </h2>
       <div className='stockMetrics flex items-center p-2 gap-4'>
         <span
-          key={`currentPrice-${price}`}
+          key={`currentPrice-${currentPrice}`}
           className={`text-4xl font-semibold animate-price-change`}
         >
           {currencySymbol}
-          {price || currentPrice}
+          {currentPrice}
         </span>
         <span
           className={`flex h-10 rounded-md items-center w-20 px-1 ${priceBackgroundColor} ${priceTextColor}`}
@@ -62,12 +64,10 @@ function StockHeader({
           <span className={`text-xl font-semibold`}>{percentageChange}%</span>
         </span>
         <span className={`${priceTextColor} font-bold`}>
-          {' '}
-          {priceSign}
-          {price || gainOrLossToday}
+          {gainOrLossToday}
         </span>
       </div>
-      <span className='ps-2'>{date}</span>
+      <span className='ps-2'>{date} {' · '} {primaryExchange}</span>
     </div>
   );
 }

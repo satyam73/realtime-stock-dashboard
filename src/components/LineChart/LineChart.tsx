@@ -12,7 +12,6 @@ import {
   LineController,
 } from 'chart.js';
 import { LineChartProps } from './lineChart.types';
-import { time } from 'console';
 
 ChartJS.register(
   CategoryScale,
