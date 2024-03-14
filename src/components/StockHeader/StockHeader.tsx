@@ -1,7 +1,6 @@
 import { CURRENCY_SYMBOL_MAPPER } from '@/src/constants';
 import { StockHeaderProps } from './stockHeader.types';
 import { MoveDown, MoveUp } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 function StockHeader({
   stockName,
@@ -11,7 +10,6 @@ function StockHeader({
   date,
   primaryExchange,
 }: StockHeaderProps) {
-  // console.log('currenprice ', currentPrice+Math.random())
   // const [price, setPrice] = useState<number>(21);
   // useEffect(() => {
   //   function runInterval() {

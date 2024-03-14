@@ -1,16 +1,15 @@
 import Tabs from '@components/common/Tabs/Tabs';
-import { MouseEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Tab } from '@/src/types';
 import StockHeader from '@components/StockHeader/StockHeader';
 import LineChart from '../components/LineChart/LineChart';
-import { CURRENT_PRICE_API_URL } from '../constants';
 import { getCurrentPrice } from '@/src/services/stocks';
-function Home() {
+
+function Home({ searchRef }: { searchRef: React.RefObject<HTMLInputElement> }) {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
   const [currentPriceData, setCurrentPriceData] = useState<any>([]);
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
-  const [isCurrentPriceDataLoading, setIsCurrentPriceDataLoading] =
-    useState<boolean>(true);
+  const [activeSymbol, setActiveSymbol] = useState<string>();
 
   let initialLoad = true;
   const currency = currentPriceData?.[0]?.currency;
@@ -21,7 +20,7 @@ function Home() {
     currentPriceData?.[0]?.latestUpdate &&
     new Date(currentPriceData?.[0]?.latestUpdate).toUTCString();
   const primaryExchange = currentPriceData?.[0]?.primaryExchange;
-  console.log(CURRENT_PRICE_API_URL('META'));
+
   const TIMELINE_TABS_DATA: Tab[] = [
     {
       id: '1d',
@@ -115,7 +114,7 @@ function Home() {
       ),
     },
   ];
-  const POLLING_TIME = 2000;
+  const POLLING_TIME = 4000;
   useEffect(() => {
     async function getPrice() {
       if (initialLoad) {
@@ -123,23 +122,60 @@ function Home() {
         initialLoad = false;
       }
       try {
-        const data = await getCurrentPrice('META');
-        console.log(data);
+        const data = await getCurrentPrice(activeSymbol);
+
+        if (!data[0]) throw new Error('Please search valid symbol!');
+
         setCurrentPriceData(data);
       } catch (error) {
         console.log(
           'Some error occured while fetching current price of the stock ',
           error
         );
+      } finally {
+        setIsInitialLoading(false);
       }
     }
 
     const interval = setInterval(getPrice, POLLING_TIME);
 
     return () => clearInterval(interval);
+  }, [activeSymbol]);
+
+  useEffect(() => {
+    async function onKeyPress(this: HTMLElement, event: KeyboardEvent) {
+      if (event.code === 'Enter') {
+        setIsInitialLoading(true);
+        const sanitizedValue = searchRef?.current?.value?.trim();
+
+        if (!sanitizedValue) return;
+
+        try {
+          const data = await getCurrentPrice(sanitizedValue);
+          if (!data[0]) {
+            alert('Please search valid symbol!');
+            throw new Error('Please search valid symbol!');
+          }
+
+          setActiveSymbol(sanitizedValue);
+          setCurrentPriceData(data);
+        } catch (error) {
+          console.log(
+            'Some error occured while fetching current price of the stock ',
+            error
+          );
+        } finally {
+          setIsInitialLoading(false);
+        }
+      }
+    }
+
+    document.body.addEventListener('keypress', onKeyPress);
+
+    return () => document.body.removeEventListener('keypress', onKeyPress);
   }, []);
 
-  function onTabClick(e: MouseEvent<HTMLElement>, index: number) {
+  function onTabClick(index: number) {
     if (activeTabIndex === index) return;
 
     setActiveTabIndex(index);

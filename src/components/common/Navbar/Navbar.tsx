@@ -1,6 +1,7 @@
 import SearchBar from '@components/SearchBar/SearchBar';
+import { NavbarProps } from './navbar.types';
 
-function Navbar() {
+function Navbar({searchRef}: NavbarProps) {
   return (
     <header
       className={'h-14 flex items-center border-b-2 shadow-sm border-dashed'}
@@ -8,10 +9,7 @@ function Navbar() {
       <div className='logo text-2xl font-bold'>Stocker</div>
       <div className='mx-auto w-4/5'>
         <SearchBar
-          searchValue='ffdfd'
-          onSearchInput={(event) => {
-            // console.log(event.target.value)
-          }}
+          searchRef={searchRef}
         />
       </div>
     </header>

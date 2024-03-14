@@ -1,5 +1,6 @@
-import { ReactNode } from "react"
+import { FormEvent, ReactNode } from 'react';
 
 export type LayoutProps = {
-    children: ReactNode;
-}
+  searchRef: React.RefObject<HTMLInputElement>;
+  children: ReactNode;
+};

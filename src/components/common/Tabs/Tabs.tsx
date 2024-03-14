@@ -1,4 +1,3 @@
-import { MouseEvent } from 'react';
 import { TabsProps } from './tabs.types';
 
 function Tabs({ tabs, activeTabIndex, onTabClick }: TabsProps) {
@@ -9,7 +8,7 @@ function Tabs({ tabs, activeTabIndex, onTabClick }: TabsProps) {
         <li
           className='me-2'
           key={tab.id}
-          onClick={(e: MouseEvent<HTMLLIElement>) => onTabClick(e, index)}
+          onClick={() => onTabClick(index)}
         >
           <a
             href='#'
@@ -26,7 +25,7 @@ function Tabs({ tabs, activeTabIndex, onTabClick }: TabsProps) {
       <li
         className='me-2'
         key={tab.id}
-        onClick={(e: MouseEvent<HTMLLIElement>) => onTabClick(e, index)}
+        onClick={() => onTabClick(index)}
       >
         <a
           href='#'

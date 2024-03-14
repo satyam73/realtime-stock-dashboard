@@ -1,5 +1,5 @@
 import { CURRENT_PRICE_API_URL } from '@/src/constants'
-export async function getCurrentPrice(stockSymbol = 'DOW') {
+export async function getCurrentPrice(stockSymbol = 'META') {
   try {
     const response = await fetch(CURRENT_PRICE_API_URL(stockSymbol));
     const data = await response.json();
