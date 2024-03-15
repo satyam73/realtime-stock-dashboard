@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState } from 'react';
+import { useRef, } from 'react';
 import './App.css';
 import Layout from './components/common/Layout/Layout';
 import Home from '@/src/pages/home';
