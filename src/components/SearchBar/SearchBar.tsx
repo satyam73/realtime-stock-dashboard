@@ -7,14 +7,14 @@ function SearchBar({ searchRef }: SearchBarProps) {
       <input
         type='text'
         name='stockName'
-        placeholder='Search a stock with symbol name like MSFT for microsoft'
+        placeholder='Search stock symbol'
         aria-label='Search a stock with symbol name'
         className='border p-2 text-md font-semibold focus:outline-none rounded-xl w-full pr-8'
         ref={searchRef}
       />
-      <button className='absolute top-3 right-2 bg-white'>
+      <span className='absolute top-3 right-2 bg-white'>
         <Search size={20} />
-      </button>
+      </span>
     </div>
   );
 }

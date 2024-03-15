@@ -98,7 +98,7 @@ function Home({ searchRef }: { searchRef: React.RefObject<HTMLInputElement> }) {
 
   useEffect(() => {
     async function onKeyPress(this: HTMLElement, event: KeyboardEvent) {
-      if (event.code === 'Enter') {
+      if (event.code === 'Enter' ||event.key==='Enter') {
         setIsInitialLoading(true);
         const sanitizedValue = searchRef?.current?.value?.trim();
 
@@ -166,7 +166,7 @@ function Home({ searchRef }: { searchRef: React.RefObject<HTMLInputElement> }) {
     if (activeTabIndex === index) return;
 
     const range = TIMELINE_TABS_DATA[index].id;
-    
+
     getIntradayPriceData(activeSymbol, range).then((res) => {
       if (!res.set)
         return alert(
@@ -180,7 +180,7 @@ function Home({ searchRef }: { searchRef: React.RefObject<HTMLInputElement> }) {
   if (isInitialLoading) return <h2 className='text-lg mx-auto'>Loading...</h2>;
 
   return (
-    <div className='flex flex-col gap-8'>
+    <div className='flex flex-col gap-8 px-2'>
       <StockHeader
         currency={currency}
         stockName={stockName}
