@@ -1,21 +1,32 @@
 import Tabs from '@components/common/Tabs/Tabs';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Tab } from '@/src/types';
 import StockHeader from '@components/StockHeader/StockHeader';
 import LineChart from '../components/LineChart/LineChart';
-import { getCurrentPrice } from '@/src/services/stocks';
+import { getCurrentPrice, getIntradayPrices } from '@/src/services/stocks';
 
 function Home({ searchRef }: { searchRef: React.RefObject<HTMLInputElement> }) {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
   const [currentPriceData, setCurrentPriceData] = useState<any>([]);
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
-  const [activeSymbol, setActiveSymbol] = useState<string>();
-
+  const [activeSymbol, setActiveSymbol] = useState<string>('meta');
+  const [intradayPrices, setIntradayPrices] = useState<any>();
+  const [isChartLoading, setIsChartLoading] = useState<boolean>(true);
+  const [rangeForIntradayPrices, setRangeForIntradayPrices] =
+    useState<string>('1d');
   let initialLoad = true;
   const currency = currentPriceData?.[0]?.currency;
   const stockName = currentPriceData?.[0]?.companyName;
-  const currentPrice = currentPriceData?.[0]?.latestPrice;
-  const previousClosing = currentPriceData?.[0]?.previousClose;
+  const currentPrice = Number(currentPriceData?.[0]?.latestPrice?.toFixed(2));
+  const endRangeForIntradayPrices = new Date(
+    intradayPrices?.realData?.[intradayPrices?.realData?.length - 1]?.date
+  )?.toUTCString();
+  const startRangeForIntradayPrices = new Date(
+    intradayPrices?.realData?.[0]?.date
+  )?.toUTCString();
+  const previousClosing = Number(
+    currentPriceData?.[0]?.previousClose?.toFixed(2)
+  );
   const latestUpdate =
     currentPriceData?.[0]?.latestUpdate &&
     new Date(currentPriceData?.[0]?.latestUpdate).toUTCString();
@@ -27,94 +38,37 @@ function Home({ searchRef }: { searchRef: React.RefObject<HTMLInputElement> }) {
       name: '1D',
       component: (
         <LineChart
-          timeData={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
-          priceData={[33, 25, 35, 51, 54, 76]}
+          timeData={intradayPrices?.chartData?.timeArray}
+          priceData={intradayPrices?.chartData?.pricesArray}
+          symbol={activeSymbol}
         />
       ),
     },
     {
-      id: '5d',
+      id: '5dm',
       name: '5D',
       component: (
         <LineChart
-          timeData={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
-          priceData={[33, 255, 35, 51, 254, 76]}
+          timeData={intradayPrices?.chartData?.timeArray}
+          priceData={intradayPrices?.chartData?.pricesArray}
+          symbol={activeSymbol}
         />
       ),
     },
     {
-      id: '1m',
+      id: '1mm',
       name: '1M',
       component: (
         <LineChart
-          timeData={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
-          priceData={[310, 225, 25, 51, 310, 225, 54, 76]}
-        />
-      ),
-    },
-    {
-      id: '6m',
-      name: '6M',
-      component: (
-        <LineChart
-          timeData={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
-          priceData={[51, 54, 76, 33, 25, 33, 25, 35, 51, 54, 76, 35]}
-        />
-      ),
-    },
-    {
-      id: '1y',
-      name: '1Y',
-      component: (
-        <LineChart
-          timeData={[
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-          ]}
-          priceData={[
-            35, 51, 33, 51, 54, 76, 33, 25, 33, 25, 35, 51, 54, 76, 35, 25, 54,
-            76, 35, 51, 33, 51, 54, 76, 33, 25, 33, 25, 35, 51, 54, 76, 35, 25,
-            54, 76,
-          ]}
+          timeData={intradayPrices?.chartData?.timeArray}
+          priceData={intradayPrices?.chartData?.pricesArray}
+          symbol={activeSymbol}
         />
       ),
     },
   ];
-  const POLLING_TIME = 4000;
+  const POLLING_TIME = 2000;
+
   useEffect(() => {
     async function getPrice() {
       if (initialLoad) {
@@ -175,10 +129,52 @@ function Home({ searchRef }: { searchRef: React.RefObject<HTMLInputElement> }) {
     return () => document.body.removeEventListener('keypress', onKeyPress);
   }, []);
 
+  const getIntradayPriceData = useCallback(
+    async (symbol: null | string = null, range: null | string = null) => {
+      setIsChartLoading(true)
+      try {
+        const data = await getIntradayPrices(
+          symbol || activeSymbol,
+          range || rangeForIntradayPrices
+        );
+        if (
+          !data.chartData.pricesArray.length ||
+          !data.chartData.timeArray.length
+        )
+          throw new Error('Data is null');
+
+        setIntradayPrices(data);
+
+        return { set: true };
+      } catch (error) {
+        console.log(
+          `Some error occured while fetching intraday prices for ${activeSymbol} with range ${rangeForIntradayPrices}`,
+          error
+        );
+        return { set: false };
+      }finally{
+        setIsChartLoading(false)
+      }
+    },
+    [activeSymbol, rangeForIntradayPrices]
+  );
+  useEffect(() => {
+    getIntradayPriceData();
+  }, [activeSymbol]);
+
   function onTabClick(index: number) {
     if (activeTabIndex === index) return;
 
-    setActiveTabIndex(index);
+    const range = TIMELINE_TABS_DATA[index].id;
+    
+    getIntradayPriceData(activeSymbol, range).then((res) => {
+      if (!res.set)
+        return alert(
+          'Chart not avilable right now, please try in few seconds!'
+        );
+      setRangeForIntradayPrices(range);
+      setActiveTabIndex(index);
+    });
   }
 
   if (isInitialLoading) return <h2 className='text-lg mx-auto'>Loading...</h2>;
@@ -188,17 +184,28 @@ function Home({ searchRef }: { searchRef: React.RefObject<HTMLInputElement> }) {
       <StockHeader
         currency={currency}
         stockName={stockName}
-        // TODO: remove this
-        currentPrice={Number((currentPrice + Math.random()).toFixed(2))}
-        // currentPrice={currentPrice}
+        currentPrice={currentPrice}
         previousClosing={previousClosing}
         date={latestUpdate}
         primaryExchange={primaryExchange}
       />
+      <span>Charts data are not realtime due to limitations for APIs</span>
+      <span>
+        Showing chart from
+        <span className='font-bold text-gray-600'>
+          {' '}
+          {startRangeForIntradayPrices}{' '}
+        </span>
+        to{' '}
+        <span className='font-bold text-gray-600'>
+          {endRangeForIntradayPrices}
+        </span>
+      </span>
       <Tabs
         tabs={TIMELINE_TABS_DATA}
         activeTabIndex={activeTabIndex}
         onTabClick={onTabClick}
+        isChildrenLoading={isChartLoading}
       ></Tabs>
     </div>
   );

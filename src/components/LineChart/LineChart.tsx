@@ -23,12 +23,12 @@ ChartJS.register(
 ChartJS.defaults.font.size = 16;
 ChartJS.defaults.font.family = 'Montserrat';
 
-function LineChart({ timeData, priceData }: LineChartProps) {
+function LineChart({ timeData, priceData ,symbol}: LineChartProps) {
   const data = {
     labels: timeData,
     datasets: [
       {
-        label: 'First dataset',
+        label: symbol?.toUpperCase(),
         data: priceData,
         fill: true,
         backgroundColor: 'rgba(75,192,192,0.2)',

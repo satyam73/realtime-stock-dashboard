@@ -7,8 +7,8 @@ function SearchBar({ searchRef }: SearchBarProps) {
       <input
         type='text'
         name='stockName'
-        placeholder='Search stock or cryptocurrency'
-        aria-label='Search stock or cryptocurrency'
+        placeholder='Search a stock with symbol name like MSFT for microsoft'
+        aria-label='Search a stock with symbol name'
         className='border p-2 text-md font-semibold focus:outline-none rounded-xl w-full pr-8'
         ref={searchRef}
       />

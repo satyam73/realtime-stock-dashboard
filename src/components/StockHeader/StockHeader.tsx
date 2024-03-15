@@ -62,7 +62,7 @@ function StockHeader({
           <span className={`text-xl font-semibold`}>{percentageChange}%</span>
         </span>
         <span className={`${priceTextColor} font-bold`}>
-          {gainOrLossToday}
+          {isPriceUp && '+'}{gainOrLossToday}
         </span>
       </div>
       <span className='ps-2'>{date} {' · '} {primaryExchange}</span>

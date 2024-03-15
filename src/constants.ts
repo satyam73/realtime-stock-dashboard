@@ -3,9 +3,11 @@ export const API_URL: string =
 
 const token = import.meta.env.VITE_API_TOKEN;
 export const API_BASE_URL = 'https://api.iex.cloud/v1';
-export const CURRENT_PRICE_API_URL = (stockSymbol:string) =>
+export const CURRENT_PRICE_API_URL = (stockSymbol: string) =>
   `${API_BASE_URL}/data/CORE/QUOTE/${stockSymbol}?token=${token}`;
-// export const HISTORICAL_DATA_API_URL = ''
+export const INTRADAY_PRICES_API_URL = (stockSymbol: string, range: string) =>
+  `https://api.iex.cloud/v1/data/core/intraday_prices/${stockSymbol}?range=${range}&token=${token}`;
+
 export const CURRENCY_SYMBOL_MAPPER: { [key: string]: string } = {
   USD: '$', // United States Dollar
   EUR: '€', // Euro
