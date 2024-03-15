@@ -1,3 +1,37 @@
+# Pre-requisite
+
+- Yarn
+- Node
+- API key from [IEX cloud ](https://iexcloud.io/)
+
+# Setup Project Locally
+
+- Clone the repository with command,
+```
+git clone https://github.com/satyam73/realtime-stock-dashboard.git
+```
+- Checkout to directory(if not in the project directory) with command,
+```
+cd realtime-stock-dashboard
+```
+
+- Create `.env` file in root of the project.
+- Add `VITE_API_TOKEN` in env and add IEX cloud API key as value.
+- Install dependencies with command,
+```
+yarn install
+```
+- Run the project with command,
+```
+yarn dev
+```
+- If everything is well and good, the development server will run at, 
+```
+http://localhost:5173/
+```
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
